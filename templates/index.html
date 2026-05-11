@@ -95,6 +95,41 @@ main{max-width:1300px;margin:26px auto;padding:0 24px}
   font-size:13px;outline:none;background:#fff;cursor:pointer}
 .fsel:focus{border-color:var(--blue)}
 
+/* ── Time filter ── */
+.time-filter{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 20px;
+  border-bottom:1px solid var(--border);background:#fafafa}
+.time-btn{padding:5px 12px;border:1px solid var(--border);border-radius:6px;
+  background:#fff;font-size:12px;cursor:pointer;transition:all .15s}
+.time-btn:hover{border-color:var(--blue);color:var(--blue)}
+.time-btn.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.time-divider{width:1px;height:20px;background:var(--border);margin:0 4px}
+.date-input{padding:5px 8px;border:1px solid var(--border);border-radius:6px;
+  font-size:12px;outline:none;width:130px}
+.date-input:focus{border-color:var(--blue)}
+
+/* ── Stats tabs ── */
+.stats-tabs{display:flex;gap:4px;margin-bottom:12px}
+.stats-tab{padding:6px 14px;border:none;border-radius:6px;background:#f0f0f0;
+  font-size:13px;cursor:pointer;transition:all .15s}
+.stats-tab:hover{background:#e6e6e6}
+.stats-tab.active{background:var(--blue);color:#fff}
+.stats-panel{display:none}
+.stats-panel.active{display:block}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:12px}
+.stats-item{background:#f6f8fa;border-radius:8px;padding:12px;text-align:center}
+.stats-item .val{font-size:22px;font-weight:700;color:var(--blue)}
+.stats-item .lbl{font-size:11px;color:var(--muted);margin-top:4px}
+.stats-item.green .val{color:var(--green)}
+.stats-item.orange .val{color:var(--orange)}
+
+/* ── Reimburse status ── */
+.reimb-btn{padding:2px 10px;border:none;border-radius:100px;font-size:11px;
+  cursor:pointer;transition:all .15s}
+.reimb-btn.pending{background:#fff7e6;color:#d46b08}
+.reimb-btn.done{background:#f6ffed;color:#389e0d}
+.reimb-btn:hover{opacity:.8}
+
 /* ── Table ── */
 #result-card{display:none}
 .tbl-wrap{overflow-x:auto;max-height:520px;overflow-y:auto}
@@ -209,12 +244,28 @@ tr:hover td{background:#f5f9ff;cursor:pointer}
   </div>
 
   <!-- 统计栏 -->
-  <div id="summary" style="display:none">
-    <div class="si"><div class="val" id="s-total" style="color:var(--blue)">0</div><div class="lbl">共解析</div></div>
-    <div class="si"><div class="val" id="s-ok"    style="color:var(--green)">0</div><div class="lbl">成功提取</div></div>
-    <div class="si"><div class="val" id="s-skip"  style="color:var(--orange)">0</div><div class="lbl">跳过/未识别</div></div>
-    <div class="si"><div class="val" id="s-price" style="color:var(--blue)">¥0</div><div class="lbl">票价合计</div></div>
-    <div class="si"><div class="val" id="s-person" style="color:var(--purple);font-size:16px">-</div><div class="lbl">乘车人</div></div>
+  <div id="summary" class="card" style="display:none">
+    <div class="card-bd">
+      <div class="stats-tabs">
+        <button class="stats-tab active" data-view="overview">概览</button>
+        <button class="stats-tab" data-view="month">月度</button>
+        <button class="stats-tab" data-view="quarter">季度</button>
+        <button class="stats-tab" data-view="year">年度</button>
+      </div>
+      <div id="stats-overview" class="stats-panel active">
+        <div class="stats-grid">
+          <div class="stats-item"><div class="val" id="s-total">0</div><div class="lbl">共解析</div></div>
+          <div class="stats-item green"><div class="val" id="s-ok">0</div><div class="lbl">成功提取</div></div>
+          <div class="stats-item orange"><div class="val" id="s-skip">0</div><div class="lbl">跳过/未识别</div></div>
+          <div class="stats-item"><div class="val" id="s-price">¥0</div><div class="lbl">票价合计</div></div>
+          <div class="stats-item green"><div class="val" id="s-reimb-done">¥0</div><div class="lbl">已报销</div></div>
+          <div class="stats-item orange"><div class="val" id="s-reimb-pending">¥0</div><div class="lbl">待报销</div></div>
+        </div>
+      </div>
+      <div id="stats-month" class="stats-panel"></div>
+      <div id="stats-quarter" class="stats-panel"></div>
+      <div id="stats-year" class="stats-panel"></div>
+    </div>
   </div>
 
   <!-- 图表 -->
@@ -222,6 +273,8 @@ tr:hover td{background:#f5f9ff;cursor:pointer}
     <div class="cg">
       <div class="cc"><h3>📅 按月份票价统计（元）</h3><div class="cw"><canvas id="c-month"></canvas></div></div>
       <div class="cc"><h3>🚉 热门路线 Top 8</h3><div class="cw"><canvas id="c-route"></canvas></div></div>
+      <div class="cc"><h3>📊 路线费用 Top 8</h3><div class="cw"><canvas id="c-route-price"></canvas></div></div>
+      <div class="cc"><h3>📈 季度费用对比</h3><div class="cw"><canvas id="c-quarter"></canvas></div></div>
       <div class="cc"><h3>🚆 车次类型分布</h3><div class="cw"><canvas id="c-type"></canvas></div></div>
       <div class="cc"><h3>💺 席别分布</h3><div class="cw"><canvas id="c-seat"></canvas></div></div>
     </div>
@@ -232,6 +285,18 @@ tr:hover td{background:#f5f9ff;cursor:pointer}
     <div class="card-hd">
       <h2>📋 解析结果</h2>
       <span id="row-count" style="font-size:13px;color:var(--muted)"></span>
+    </div>
+    <div class="time-filter" id="time-filter">
+      <span style="font-size:12px;color:var(--muted)">时间筛选：</span>
+      <button class="time-btn active" data-range="all">全部</button>
+      <button class="time-btn" data-range="month">本月</button>
+      <button class="time-btn" data-range="quarter">本季度</button>
+      <button class="time-btn" data-range="year">本年度</button>
+      <span class="time-divider"></span>
+      <input type="date" class="date-input" id="date-start" title="开始日期"/>
+      <span style="color:var(--muted)">至</span>
+      <input type="date" class="date-input" id="date-end" title="结束日期"/>
+      <button class="time-btn" id="btn-custom-range">自定义</button>
     </div>
     <div id="search-bar">
       <input type="text" id="search-input" placeholder="搜索：车站、车次、姓名..."/>
@@ -245,6 +310,11 @@ tr:hover td{background:#f5f9ff;cursor:pointer}
         <option value="T">T 特快</option>
       </select>
       <select class="fsel" id="f-seat"><option value="">全部席别</option></select>
+      <select class="fsel" id="f-reimb">
+        <option value="">全部状态</option>
+        <option value="pending">未报销</option>
+        <option value="done">已报销</option>
+      </select>
     </div>
     <div class="tbl-wrap">
       <table><thead id="t-head"></thead><tbody id="t-body"></tbody></table>
@@ -273,9 +343,10 @@ tr:hover td{background:#f5f9ff;cursor:pointer}
 // ═══════════════════════════════════════════════
 let selFiles=[], allRec=[], filtRec=[], fields=[];
 let sortCol="乘车日期", sortDir="asc", charts={};
+let timeRange="all", dateStart="", dateEnd="";
 
 const COLS=["文件名","出发站","到达站","车次","乘车日期","开车时间",
-            "车厢号","座位号","席别","票价(元)","乘车人","备注","操作"];
+            "车厢号","座位号","席别","票价(元)","乘车人","报销状态","备注","操作"];
 
 // ═══════════════════════════════════════════════
 // DOM
@@ -288,10 +359,11 @@ const statusMsg=$("status-msg"), pbWrap=$("prog-wrap"),
       pbFill=$("pb-fill"), pbText=$("prog-text");
 const summary=$("summary"), chartSec=$("chart-sec"), resultCard=$("result-card");
 const searchBar=$("search-bar"), searchInput=$("search-input");
-const fType=$("f-type"), fSeat=$("f-seat");
+const fType=$("f-type"), fSeat=$("f-seat"), fReimb=$("f-reimb");
 const thead=$("t-head"), tbody=$("t-body");
 const rowCount=$("row-count"), fCount=$("f-count"), fSum=$("f-sum");
 const overlay=$("overlay"), moTitle=$("mo-title"), moBody=$("mo-body");
+const timeFilter=$("time-filter"), dateStartInput=$("date-start"), dateEndInput=$("date-end");
 
 // ═══════════════════════════════════════════════
 // 文件选择
@@ -376,9 +448,16 @@ btnClear.addEventListener("click",()=>{
   summary.style.display="none";
   chartSec.style.display="none";
   searchBar.style.display="none";
+  timeFilter.style.display="none";
   btnCsv.disabled=true; btnXls.disabled=true;
   statusMsg.textContent="";
   Object.values(charts).forEach(c=>c&&c.destroy&&c.destroy()); charts={};
+  timeRange="all";
+  document.querySelectorAll(".time-btn[data-range]").forEach(b=>b.classList.remove("active"));
+  document.querySelector(".time-btn[data-range='all']").classList.add("active");
+  dateStartInput.value=""; dateEndInput.value="";
+  dateStart=""; dateEnd="";
+  fReimb.value="";
 });
 
 // ═══════════════════════════════════════════════
@@ -387,14 +466,105 @@ btnClear.addEventListener("click",()=>{
 function renderSummary(recs){
   const ok=recs.filter(r=>r["车次"]).length;
   const total=recs.reduce((s,r)=>s+(parseFloat(r["票价(元)"])||0),0);
-  const persons=[...new Set(recs.map(r=>r["乘车人"]).filter(Boolean))];
+  const doneTotal=recs.filter(r=>r["报销状态"]==="已报销")
+    .reduce((s,r)=>s+(parseFloat(r["票价(元)"])||0),0);
+  const pendingTotal=recs.filter(r=>r["报销状态"]!=="已报销")
+    .reduce((s,r)=>s+(parseFloat(r["票价(元)"])||0),0);
   $("s-total").textContent=recs.length;
   $("s-ok").textContent=ok;
   $("s-skip").textContent=recs.length-ok;
   $("s-price").textContent="¥"+total.toFixed(2);
-  $("s-person").textContent=persons.length?persons.join("、"):"-";
-  summary.style.display="flex";
+  $("s-reimb-done").textContent="¥"+doneTotal.toFixed(2);
+  $("s-reimb-pending").textContent="¥"+pendingTotal.toFixed(2);
+  summary.style.display="block";
 }
+
+function renderMonthStats(recs){
+  const mMap={};
+  recs.forEach(r=>{
+    const m=(r["乘车日期"]||"").match(/(\d{4})年(\d{1,2})月/);
+    if(!m) return;
+    const k=m[1]+"-"+m[2].padStart(2,"0");
+    if(!mMap[k]) mMap[k]={count:0,price:0};
+    mMap[k].count++;
+    mMap[k].price+=parseFloat(r["票价(元)"])||0;
+  });
+  const keys=Object.keys(mMap).sort();
+  if(!keys.length){
+    $("stats-month").innerHTML='<div style="color:var(--muted);text-align:center;padding:20px">暂无数据</div>';
+    return;
+  }
+  let html='<div class="stats-grid">';
+  keys.forEach(k=>{
+    html+=`<div class="stats-item"><div class="val">${k}</div>`+
+          `<div class="lbl">${mMap[k].count}次 · ¥${mMap[k].price.toFixed(2)}</div></div>`;
+  });
+  html+='</div>';
+  $("stats-month").innerHTML=html;
+}
+
+function renderQuarterStats(recs){
+  const qMap={};
+  recs.forEach(r=>{
+    const m=(r["乘车日期"]||"").match(/(\d{4})年(\d{1,2})月/);
+    if(!m) return;
+    const year=m[1], month=parseInt(m[2]);
+    const q=Math.ceil(month/3);
+    const k=`${year}Q${q}`;
+    if(!qMap[k]) qMap[k]={count:0,price:0};
+    qMap[k].count++;
+    qMap[k].price+=parseFloat(r["票价(元)"])||0;
+  });
+  const keys=Object.keys(qMap).sort();
+  if(!keys.length){
+    $("stats-quarter").innerHTML='<div style="color:var(--muted);text-align:center;padding:20px">暂无数据</div>';
+    return;
+  }
+  let html='<div class="stats-grid">';
+  keys.forEach(k=>{
+    html+=`<div class="stats-item"><div class="val">${k}</div>`+
+          `<div class="lbl">${qMap[k].count}次 · ¥${qMap[k].price.toFixed(2)}</div></div>`;
+  });
+  html+='</div>';
+  $("stats-quarter").innerHTML=html;
+}
+
+function renderYearStats(recs){
+  const yMap={};
+  recs.forEach(r=>{
+    const m=(r["乘车日期"]||"").match(/(\d{4})年/);
+    if(!m) return;
+    const k=m[1];
+    if(!yMap[k]) yMap[k]={count:0,price:0};
+    yMap[k].count++;
+    yMap[k].price+=parseFloat(r["票价(元)"])||0;
+  });
+  const keys=Object.keys(yMap).sort();
+  if(!keys.length){
+    $("stats-year").innerHTML='<div style="color:var(--muted);text-align:center;padding:20px">暂无数据</div>';
+    return;
+  }
+  let html='<div class="stats-grid">';
+  keys.forEach(k=>{
+    html+=`<div class="stats-item"><div class="val">${k}</div>`+
+          `<div class="lbl">${yMap[k].count}次 · ¥${yMap[k].price.toFixed(2)}</div></div>`;
+  });
+  html+='</div>';
+  $("stats-year").innerHTML=html;
+}
+
+document.querySelectorAll(".stats-tab").forEach(tab=>{
+  tab.addEventListener("click",()=>{
+    document.querySelectorAll(".stats-tab").forEach(t=>t.classList.remove("active"));
+    tab.classList.add("active");
+    document.querySelectorAll(".stats-panel").forEach(p=>p.classList.remove("active"));
+    const view=tab.dataset.view;
+    $(`stats-${view}`).classList.add("active");
+    if(view==="month") renderMonthStats(filtRec);
+    if(view==="quarter") renderQuarterStats(filtRec);
+    if(view==="year") renderYearStats(filtRec);
+  });
+});
 
 // ═══════════════════════════════════════════════
 // 筛选
@@ -408,13 +578,75 @@ function buildSeatOpts(recs){
 searchInput.addEventListener("input",applyFilter);
 fType.addEventListener("change",applyFilter);
 fSeat.addEventListener("change",applyFilter);
+fReimb.addEventListener("change",applyFilter);
+
+function parseDate(dateStr){
+  const m=(dateStr||"").match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
+  if(!m) return null;
+  return new Date(parseInt(m[1]), parseInt(m[2])-1, parseInt(m[3]));
+}
+
+function getDateRange(range){
+  const now=new Date();
+  const year=now.getFullYear();
+  const month=now.getMonth();
+  if(range==="month"){
+    return {start:new Date(year,month,1), end:new Date(year,month+1,0)};
+  }else if(range==="quarter"){
+    const q=Math.floor(month/3);
+    return {start:new Date(year,q*3,1), end:new Date(year,q*3+3,0)};
+  }else if(range==="year"){
+    return {start:new Date(year,0,1), end:new Date(year,11,31)};
+  }
+  return null;
+}
+
+document.querySelectorAll(".time-btn[data-range]").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    document.querySelectorAll(".time-btn[data-range]").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    timeRange=btn.dataset.range;
+    dateStartInput.value="";
+    dateEndInput.value="";
+    dateStart=""; dateEnd="";
+    applyFilter();
+  });
+});
+
+$("btn-custom-range").addEventListener("click",()=>{
+  if(!dateStartInput.value || !dateEndInput.value){
+    alert("请选择开始和结束日期");
+    return;
+  }
+  document.querySelectorAll(".time-btn[data-range]").forEach(b=>b.classList.remove("active"));
+  timeRange="custom";
+  dateStart=dateStartInput.value;
+  dateEnd=dateEndInput.value;
+  applyFilter();
+});
 
 function applyFilter(){
   const kw=searchInput.value.trim().toLowerCase();
-  const ft=fType.value, fs=fSeat.value;
+  const ft=fType.value, fs=fSeat.value, fr=fReimb.value;
+  const dateRange=timeRange!=="all" && timeRange!=="custom" ? getDateRange(timeRange) : null;
   filtRec=allRec.filter(r=>{
     if(ft&&!(r["车次"]||"").toUpperCase().startsWith(ft)) return false;
     if(fs&&r["席别"]!==fs) return false;
+    if(fr){
+      const status=r["报销状态"]||"未报销";
+      if(fr==="done" && status!=="已报销") return false;
+      if(fr==="pending" && status==="已报销") return false;
+    }
+    if(dateRange){
+      const d=parseDate(r["乘车日期"]);
+      if(!d || d<dateRange.start || d>dateRange.end) return false;
+    }
+    if(timeRange==="custom" && dateStart && dateEnd){
+      const d=parseDate(r["乘车日期"]);
+      const start=new Date(dateStart);
+      const end=new Date(dateEnd);
+      if(!d || d<start || d>end) return false;
+    }
     if(kw){
       const hay=[r["出发站"],r["到达站"],r["车次"],r["乘车人"],r["文件名"],r["备注"]]
         .join(" ").toLowerCase();
@@ -423,6 +655,7 @@ function applyFilter(){
     return true;
   });
   sortRec(); renderTable();
+  renderSummary(filtRec);
 }
 function sortRec(){
   filtRec.sort((a,b)=>{
@@ -440,6 +673,7 @@ function sortRec(){
 function renderTable(){
   thead.innerHTML="<tr>"+COLS.map(c=>{
     if(c==="操作") return `<th style="cursor:default;width:60px"></th>`;
+    if(c==="报销状态") return `<th style="cursor:default;width:80px">${esc(c)}</th>`;
     const cls=c===sortCol?sortDir:"";
     return `<th class="${cls}" onclick="setSort('${c}')">${esc(c)}<span class="sa"></span></th>`;
   }).join("")+"</tr>";
@@ -450,6 +684,7 @@ function renderTable(){
     tbody.innerHTML=filtRec.map((row,i)=>"<tr>"+COLS.map(col=>{
       const v=row[col]||"";
       if(col==="操作")    return `<td><button class="act-btn" onclick="showDetail(${i})">详情</button></td>`;
+      if(col==="报销状态") return `<td>${reimbBtn(allRec.indexOf(row),v||"未报销")}</td>`;
       if(col==="车次")    return `<td>${trainBadge(v)}</td>`;
       if(col==="备注")    return `<td>${noteTags(v)||dash()}</td>`;
       if(col==="文件名")  return `<td class="td-file" title="${esc(v)}">${esc(v)}</td>`;
@@ -462,13 +697,28 @@ function renderTable(){
   fCount.textContent=`筛选后 ${filtRec.length} 条`;
   fSum.textContent=filtRec.length?`合计 ¥${tot.toFixed(2)}`:"";
   resultCard.style.display="block";
+  timeFilter.style.display="flex";
   searchBar.style.display="flex";
 }
 function setSort(col){
+  if(col==="报销状态"||col==="操作") return;
   sortDir=sortCol===col?(sortDir==="asc"?"desc":"asc"):"asc";
   sortCol=col; applyFilter();
 }
 function dash(){return `<span style="color:var(--muted)">-</span>`;}
+
+function reimbBtn(idx,status){
+  const isDone=status==="已报销";
+  const cls=isDone?"done":"pending";
+  const label=isDone?"已报销":"未报销";
+  return `<button class="reimb-btn ${cls}" onclick="toggleReimb(${idx})">${label}</button>`;
+}
+
+function toggleReimb(idx){
+  const r=allRec[idx];
+  r["报销状态"]=r["报销状态"]==="已报销"?"未报销":"已报销";
+  applyFilter();
+}
 
 // ═══════════════════════════════════════════════
 // 详情弹窗
@@ -482,6 +732,7 @@ function showDetail(i){
     {l:"开车时间",v:r["开车时间"]},{l:"票价",v:r["票价(元)"]?"¥"+r["票价(元)"]:""},
     {l:"车厢号",v:r["车厢号"]},{l:"座位号",v:r["座位号"]},
     {l:"席别",v:r["席别"]},{l:"乘车人",v:r["乘车人"]},
+    {l:"报销状态",v:r["报销状态"]||"未报销"},
     {l:"证件号（脱敏）",v:r["证件号(脱敏)"]},{l:"开票日期",v:r["开票日期"]},
     {l:"发票号码",v:r["发票号码"],f:1},
     {l:"电子客票号",v:r["电子客票号"],f:1},
@@ -519,7 +770,7 @@ function renderCharts(recs){
       backgroundColor:"rgba(22,119,255,.75)",borderRadius:5,borderSkipped:false}]
   },options:opts1()});
 
-  // 热门路线
+  // 热门路线（次数）
   const rMap={};
   recs.forEach(r=>{
     if(!r["出发站"]||!r["到达站"]) return;
@@ -530,6 +781,35 @@ function renderCharts(recs){
     labels:top8.map(x=>x[0]),datasets:[{label:"次",data:top8.map(x=>x[1]),
       backgroundColor:"rgba(82,196,26,.75)",borderRadius:5,borderSkipped:false}]
   },options:{...opts1(),indexAxis:"y"}});
+
+  // 路线费用
+  const rpMap={};
+  recs.forEach(r=>{
+    if(!r["出发站"]||!r["到达站"]) return;
+    const k=r["出发站"]+"→"+r["到达站"];
+    rpMap[k]=(rpMap[k]||0)+(parseFloat(r["票价(元)"])||0);
+  });
+  const top8p=Object.entries(rpMap).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  charts.routePrice=new Chart($("c-route-price"),{type:"bar",data:{
+    labels:top8p.map(x=>x[0]),datasets:[{label:"费用(元)",data:top8p.map(x=>+x[1].toFixed(2)),
+      backgroundColor:"rgba(250,140,22,.75)",borderRadius:5,borderSkipped:false}]
+  },options:{...opts1(),indexAxis:"y"}});
+
+  // 季度费用
+  const qMap={};
+  recs.forEach(r=>{
+    const m=(r["乘车日期"]||"").match(/(\d{4})年(\d{1,2})月/);
+    if(!m) return;
+    const year=m[1], month=parseInt(m[2]);
+    const q=Math.ceil(month/3);
+    const k=`${year}Q${q}`;
+    qMap[k]=(qMap[k]||0)+(parseFloat(r["票价(元)"])||0);
+  });
+  const qK=Object.keys(qMap).sort();
+  charts.quarter=new Chart($("c-quarter"),{type:"bar",data:{
+    labels:qK,datasets:[{label:"费用(元)",data:qK.map(k=>+qMap[k].toFixed(2)),
+      backgroundColor:"rgba(114,46,209,.75)",borderRadius:5,borderSkipped:false}]
+  },options:opts1()});
 
   // 车次类型
   const tMap={G:0,C:0,D:0,K:0,Z:0,T:0,"其他":0};
