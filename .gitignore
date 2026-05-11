@@ -6,8 +6,11 @@ tickets.xlsx       # Excel 导出
 .workbuddy
 .trae
 
+
 # ── Python ────────────────────────────────────────────────────
 __pycache__/
+.pytest_cache/
+.ruff_cache/
 *.pyc
 *.pyo
 venv/
