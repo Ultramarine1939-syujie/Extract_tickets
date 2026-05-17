@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>国铁电子客票解析工具</title>
+<title data-i18n="app.title">国铁电子客票解析工具</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -21,8 +21,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
 header{background:linear-gradient(135deg,#1677ff,#0958d9);padding:18px 32px;
   display:flex;align-items:center;gap:14px;box-shadow:0 2px 12px rgba(22,119,255,.3)}
 header .logo{font-size:30px}
+header .header-content{flex:1}
 header h1{color:#fff;font-size:20px;font-weight:700}
 header p{color:rgba(255,255,255,.75);font-size:13px;margin-top:2px}
+header .lang-switch{display:flex;gap:4px;background:rgba(255,255,255,.15);border-radius:8px;padding:4px}
+header .lang-btn{background:transparent;border:none;color:rgba(255,255,255,.7);padding:6px 12px;
+  border-radius:6px;cursor:pointer;font-size:13px;font-weight:500;transition:all .15s}
+header .lang-btn:hover{background:rgba(255,255,255,.1);color:#fff}
+header .lang-btn.active{background:#fff;color:#1677ff}
 
 /* ── Layout ── */
 main{max-width:1300px;margin:26px auto;padding:0 24px}
@@ -211,36 +217,40 @@ tr:hover td{background:#f5f9ff;cursor:pointer}
 
 <header>
   <div class="logo">🚄</div>
-  <div>
-    <h1>国铁电子客票解析工具</h1>
-    <p>上传 PDF 发票，自动提取信息 · 导入旧表格 · 排序筛选 · 导出 CSV / Excel</p>
+  <div class="header-content">
+    <h1 data-i18n="app.title">国铁电子客票解析工具</h1>
+    <p data-i18n="app.subtitle">上传 PDF 发票，自动提取信息 · 导入旧表格 · 排序筛选 · 导出 CSV / Excel</p>
+  </div>
+  <div class="lang-switch">
+    <button class="lang-btn active" data-lang="zh">中文</button>
+    <button class="lang-btn" data-lang="en">English</button>
   </div>
 </header>
 
 <main>
   <!-- 上传区 -->
   <div class="card">
-    <div class="card-hd"><h2>📁 上传发票文件</h2></div>
+    <div class="card-hd"><h2 data-i18n="upload.title">📁 上传发票文件</h2></div>
     <div class="card-bd">
       <div class="dz" id="dropzone">
         <input type="file" id="file-input" accept=".pdf" multiple/>
         <div class="dz-icon">📄</div>
-        <div class="dz-hint"><span>点击选择</span> 或将 PDF 文件拖拽至此</div>
-        <div class="dz-sub">支持批量上传 · 仅限 .pdf 格式 · 最大 100 MB</div>
+        <div class="dz-hint"><span data-i18n="upload.click">点击选择</span> <span data-i18n="upload.drag">或将 PDF 文件拖拽至此</span></div>
+        <div class="dz-sub" data-i18n="upload.hint">支持批量上传 · 仅限 .pdf 格式 · 最大 100 MB</div>
       </div>
       <div id="file-list"></div>
       <div class="action-bar">
-        <button class="btn btn-blue"  id="btn-parse"    disabled>🔍 开始解析</button>
-        <button class="btn btn-ghost" id="btn-import">📥 导入旧表格</button>
+        <button class="btn btn-blue"  id="btn-parse"    disabled data-i18n="btn.parse">🔍 开始解析</button>
+        <button class="btn btn-ghost" id="btn-import" data-i18n="btn.import">📥 导入旧表格</button>
         <input type="file" id="import-input" accept=".csv,.xlsx,.xlsm" style="display:none"/>
-        <button class="btn btn-green" id="btn-dl-csv"   disabled>⬇ 导出 CSV</button>
-        <button class="btn btn-teal"  id="btn-dl-excel" disabled>📊 导出 Excel</button>
-        <button class="btn btn-ghost" id="btn-clear">🗑 清空</button>
+        <button class="btn btn-green" id="btn-dl-csv"   disabled data-i18n="btn.exportCsv">⬇ 导出 CSV</button>
+        <button class="btn btn-teal"  id="btn-dl-excel" disabled data-i18n="btn.exportExcel">📊 导出 Excel</button>
+        <button class="btn btn-ghost" id="btn-clear" data-i18n="btn.clear">🗑 清空</button>
         <span id="status-msg"></span>
       </div>
       <div id="prog-wrap">
         <div class="pb-bg"><div class="pb-fill" id="pb-fill"></div></div>
-        <div id="prog-text">正在解析...</div>
+        <div id="prog-text" data-i18n="progress.parsing">正在解析...</div>
       </div>
     </div>
   </div>
@@ -249,19 +259,19 @@ tr:hover td{background:#f5f9ff;cursor:pointer}
   <div id="summary" class="card" style="display:none">
     <div class="card-bd">
       <div class="stats-tabs">
-        <button class="stats-tab active" data-view="overview">概览</button>
-        <button class="stats-tab" data-view="month">月度</button>
-        <button class="stats-tab" data-view="quarter">季度</button>
-        <button class="stats-tab" data-view="year">年度</button>
+        <button class="stats-tab active" data-view="overview" data-i18n="stats.overview">概览</button>
+        <button class="stats-tab" data-view="month" data-i18n="stats.monthly">月度</button>
+        <button class="stats-tab" data-view="quarter" data-i18n="stats.quarterly">季度</button>
+        <button class="stats-tab" data-view="year" data-i18n="stats.yearly">年度</button>
       </div>
       <div id="stats-overview" class="stats-panel active">
         <div class="stats-grid">
-          <div class="stats-item"><div class="val" id="s-total">0</div><div class="lbl">共解析</div></div>
-          <div class="stats-item green"><div class="val" id="s-ok">0</div><div class="lbl">成功提取</div></div>
-          <div class="stats-item orange"><div class="val" id="s-skip">0</div><div class="lbl">跳过/未识别</div></div>
-          <div class="stats-item"><div class="val" id="s-price">¥0</div><div class="lbl">票价合计</div></div>
-          <div class="stats-item green"><div class="val" id="s-reimb-done">¥0</div><div class="lbl">已报销</div></div>
-          <div class="stats-item orange"><div class="val" id="s-reimb-pending">¥0</div><div class="lbl">待报销</div></div>
+          <div class="stats-item"><div class="val" id="s-total">0</div><div class="lbl" data-i18n="stats.totalParsed">共解析</div></div>
+          <div class="stats-item green"><div class="val" id="s-ok">0</div><div class="lbl" data-i18n="stats.successExtract">成功提取</div></div>
+          <div class="stats-item orange"><div class="val" id="s-skip">0</div><div class="lbl" data-i18n="stats.skipped">跳过/未识别</div></div>
+          <div class="stats-item"><div class="val" id="s-price">¥0</div><div class="lbl" data-i18n="stats.totalPrice">票价合计</div></div>
+          <div class="stats-item green"><div class="val" id="s-reimb-done">¥0</div><div class="lbl" data-i18n="stats.reimbursed">已报销</div></div>
+          <div class="stats-item orange"><div class="val" id="s-reimb-pending">¥0</div><div class="lbl" data-i18n="stats.pendingReimburse">待报销</div></div>
         </div>
       </div>
       <div id="stats-month" class="stats-panel"></div>
@@ -273,49 +283,49 @@ tr:hover td{background:#f5f9ff;cursor:pointer}
   <!-- 图表 -->
   <div id="chart-sec">
     <div class="cg">
-      <div class="cc"><h3>📅 按月份票价统计（元）</h3><div class="cw"><canvas id="c-month"></canvas></div></div>
-      <div class="cc"><h3>🚉 热门路线 Top 8</h3><div class="cw"><canvas id="c-route"></canvas></div></div>
-      <div class="cc"><h3>📊 路线费用 Top 8</h3><div class="cw"><canvas id="c-route-price"></canvas></div></div>
-      <div class="cc"><h3>📈 季度费用对比</h3><div class="cw"><canvas id="c-quarter"></canvas></div></div>
-      <div class="cc"><h3>🚆 车次类型分布</h3><div class="cw"><canvas id="c-type"></canvas></div></div>
-      <div class="cc"><h3>💺 席别分布</h3><div class="cw"><canvas id="c-seat"></canvas></div></div>
+      <div class="cc"><h3 data-i18n="chart.monthlyPrice">📅 按月份票价统计（元）</h3><div class="cw"><canvas id="c-month"></canvas></div></div>
+      <div class="cc"><h3 data-i18n="chart.topRoutes">🚉 热门路线 Top 8</h3><div class="cw"><canvas id="c-route"></canvas></div></div>
+      <div class="cc"><h3 data-i18n="chart.routeCost">📊 路线费用 Top 8</h3><div class="cw"><canvas id="c-route-price"></canvas></div></div>
+      <div class="cc"><h3 data-i18n="chart.quarterlyCost">📈 季度费用对比</h3><div class="cw"><canvas id="c-quarter"></canvas></div></div>
+      <div class="cc"><h3 data-i18n="chart.trainTypes">🚆 车次类型分布</h3><div class="cw"><canvas id="c-type"></canvas></div></div>
+      <div class="cc"><h3 data-i18n="chart.seatTypes">💺 席别分布</h3><div class="cw"><canvas id="c-seat"></canvas></div></div>
     </div>
   </div>
 
   <!-- 结果表格 -->
   <div class="card" id="result-card">
     <div class="card-hd">
-      <h2>📋 解析结果</h2>
+      <h2 data-i18n="result.title">📋 解析结果</h2>
       <span id="row-count" style="font-size:13px;color:var(--muted)"></span>
     </div>
     <div class="time-filter" id="time-filter">
-      <span style="font-size:12px;color:var(--muted)">时间筛选：</span>
-      <button class="time-btn active" data-range="all">全部</button>
-      <button class="time-btn" data-range="month">本月</button>
-      <button class="time-btn" data-range="quarter">本季度</button>
-      <button class="time-btn" data-range="year">本年度</button>
+      <span style="font-size:12px;color:var(--muted)" data-i18n="filter.timeFilter">时间筛选：</span>
+      <button class="time-btn active" data-range="all" data-i18n="filter.all">全部</button>
+      <button class="time-btn" data-range="month" data-i18n="filter.thisMonth">本月</button>
+      <button class="time-btn" data-range="quarter" data-i18n="filter.thisQuarter">本季度</button>
+      <button class="time-btn" data-range="year" data-i18n="filter.thisYear">本年度</button>
       <span class="time-divider"></span>
-      <input type="date" class="date-input" id="date-start" title="开始日期"/>
-      <span style="color:var(--muted)">至</span>
-      <input type="date" class="date-input" id="date-end" title="结束日期"/>
-      <button class="time-btn" id="btn-custom-range">自定义</button>
+      <input type="date" class="date-input" id="date-start" :title="i18n.t('filter.startDate')"/>
+      <span style="color:var(--muted)" data-i18n="filter.to">至</span>
+      <input type="date" class="date-input" id="date-end" :title="i18n.t('filter.endDate')"/>
+      <button class="time-btn" id="btn-custom-range" data-i18n="filter.custom">自定义</button>
     </div>
     <div id="search-bar">
-      <input type="text" id="search-input" placeholder="搜索：车站、车次、姓名..."/>
+      <input type="text" id="search-input" data-i18n-placeholder="filter.searchPlaceholder"/>
       <select class="fsel" id="f-type">
-        <option value="">全部车次</option>
-        <option value="G">G 高铁</option>
-        <option value="C">C 城际</option>
-        <option value="D">D 动车</option>
-        <option value="K">K 快速</option>
-        <option value="Z">Z 直达</option>
-        <option value="T">T 特快</option>
+        <option value="" data-i18n="filter.allTrains">全部车次</option>
+        <option value="G">G <span data-i18n="train.highSpeed">高铁</span></option>
+        <option value="C">C <span data-i18n="train.intercity">城际</span></option>
+        <option value="D">D <span data-i18n="train.emu">动车</span></option>
+        <option value="K">K <span data-i18n="train.fast">快速</span></option>
+        <option value="Z">Z <span data-i18n="train.direct">直达</span></option>
+        <option value="T">T <span data-i18n="train.express">特快</span></option>
       </select>
-      <select class="fsel" id="f-seat"><option value="">全部席别</option></select>
+      <select class="fsel" id="f-seat"><option value="" data-i18n="filter.allSeats">全部席别</option></select>
       <select class="fsel" id="f-reimb">
-        <option value="">全部状态</option>
-        <option value="pending">未报销</option>
-        <option value="done">已报销</option>
+        <option value="" data-i18n="filter.allStatus">全部状态</option>
+        <option value="pending" data-i18n="status.pending">未报销</option>
+        <option value="done" data-i18n="status.done">已报销</option>
       </select>
     </div>
     <div class="tbl-wrap">
@@ -332,7 +342,7 @@ tr:hover td{background:#f5f9ff;cursor:pointer}
 <div class="overlay" id="overlay">
   <div class="modal">
     <div class="mo-hd">
-      <h3 id="mo-title">发票详情</h3>
+      <h3 id="mo-title" data-i18n="detail.title">发票详情</h3>
       <button class="mo-close" id="mo-close">✕</button>
     </div>
     <div class="mo-bd" id="mo-body"></div>
@@ -341,14 +351,348 @@ tr:hover td{background:#f5f9ff;cursor:pointer}
 
 <script>
 // ═══════════════════════════════════════════════
+// 国际化
+// ═══════════════════════════════════════════════
+const i18n = {
+  lang: localStorage.getItem('lang') || 'zh',
+  
+  translations: {
+    zh: {
+      app: {
+        title: '国铁电子客票解析工具',
+        subtitle: '上传 PDF 发票，自动提取信息 · 导入旧表格 · 排序筛选 · 导出 CSV / Excel'
+      },
+      upload: {
+        title: '📁 上传发票文件',
+        click: '点击选择',
+        drag: '或将 PDF 文件拖拽至此',
+        hint: '支持批量上传 · 仅限 .pdf 格式 · 最大 100 MB',
+        selected: '已选 {count} 个文件'
+      },
+      btn: {
+        parse: '🔍 开始解析',
+        import: '📥 导入旧表格',
+        exportCsv: '⬇ 导出 CSV',
+        exportExcel: '📊 导出 Excel',
+        clear: '🗑 清空',
+        detail: '详情',
+        generating: '⏳ 生成中...'
+      },
+      progress: {
+        parsing: '正在解析...',
+        parsingFile: '解析中 ({current}/{total}): {filename}',
+        completed: '全部解析完成',
+        importing: '正在导入 {filename}...',
+        imported: '已导入 {count} 条，共 {total} 条',
+        added: '新增 {count} 条，共 {total} 条'
+      },
+      stats: {
+        overview: '概览',
+        monthly: '月度',
+        quarterly: '季度',
+        yearly: '年度',
+        totalParsed: '共解析',
+        successExtract: '成功提取',
+        skipped: '跳过/未识别',
+        totalPrice: '票价合计',
+        reimbursed: '已报销',
+        pendingReimburse: '待报销',
+        noData: '暂无数据',
+        times: '次'
+      },
+      chart: {
+        monthlyPrice: '📅 按月份票价统计（元）',
+        topRoutes: '🚉 热门路线 Top 8',
+        routeCost: '📊 路线费用 Top 8',
+        quarterlyCost: '📈 季度费用对比',
+        trainTypes: '🚆 车次类型分布',
+        seatTypes: '💺 席别分布',
+        price: '票价(元)',
+        count: '次',
+        cost: '费用(元)'
+      },
+      result: {
+        title: '📋 解析结果',
+        total: '共 {count} 条',
+        filtered: '筛选后 {count} 条',
+        sum: '合计 ¥{amount}',
+        noData: '暂无数据'
+      },
+      filter: {
+        timeFilter: '时间筛选：',
+        all: '全部',
+        thisMonth: '本月',
+        thisQuarter: '本季度',
+        thisYear: '本年度',
+        custom: '自定义',
+        to: '至',
+        startDate: '开始日期',
+        endDate: '结束日期',
+        searchPlaceholder: '搜索：车站、车次、姓名...',
+        allTrains: '全部车次',
+        allSeats: '全部席别',
+        allStatus: '全部状态',
+        selectDateRange: '请选择开始和结束日期'
+      },
+      train: {
+        highSpeed: '高铁',
+        intercity: '城际',
+        emu: '动车',
+        fast: '快速',
+        direct: '直达',
+        express: '特快'
+      },
+      status: {
+        pending: '未报销',
+        done: '已报销'
+      },
+      detail: {
+        title: '发票详情',
+        departure: '出发站',
+        arrival: '到达站',
+        trainNo: '车次',
+        travelDate: '乘车日期',
+        departTime: '开车时间',
+        price: '票价',
+        carNo: '车厢号',
+        seatNo: '座位号',
+        seatClass: '席别',
+        passenger: '乘车人',
+        reimbStatus: '报销状态',
+        idNo: '证件号（脱敏）',
+        invoiceDate: '开票日期',
+        invoiceNo: '发票号码',
+        eTicketNo: '电子客票号',
+        remark: '备注'
+      },
+      field: {
+        filename: '文件名',
+        invoiceNo: '发票号码',
+        invoiceDate: '开票日期',
+        departure: '出发站',
+        arrival: '到达站',
+        trainNo: '车次',
+        travelDate: '乘车日期',
+        departTime: '开车时间',
+        carNo: '车厢号',
+        seatNo: '座位号',
+        seatClass: '席别',
+        price: '票价(元)',
+        passenger: '乘车人',
+        idNo: '证件号(脱敏)',
+        eTicketNo: '电子客票号',
+        remark: '备注',
+        reimbStatus: '报销状态',
+        action: '操作'
+      },
+      error: {
+        parseFailed: '解析失败: {error}',
+        importFailed: '导入失败：{error}',
+        exportFailed: '导出失败：{error}',
+        onlyPdf: '仅支持 PDF 文件',
+        onlyTable: '仅支持 CSV、XLSX 或 XLSM 表格',
+        noFile: '未收到文件'
+      },
+      note: {
+        student: '学生票',
+        rescheduled: '始发改签'
+      }
+    },
+    en: {
+      app: {
+        title: 'China Railway E-Ticket Parser',
+        subtitle: 'Upload PDF invoices, auto-extract info · Import tables · Sort & Filter · Export CSV / Excel'
+      },
+      upload: {
+        title: '📁 Upload Invoice Files',
+        click: 'Click to select',
+        drag: 'or drag PDF files here',
+        hint: 'Batch upload supported · PDF only · Max 100 MB',
+        selected: '{count} file(s) selected'
+      },
+      btn: {
+        parse: '🔍 Start Parsing',
+        import: '📥 Import Table',
+        exportCsv: '⬇ Export CSV',
+        exportExcel: '📊 Export Excel',
+        clear: '🗑 Clear',
+        detail: 'Detail',
+        generating: '⏳ Generating...'
+      },
+      progress: {
+        parsing: 'Parsing...',
+        parsingFile: 'Parsing ({current}/{total}): {filename}',
+        completed: 'All files parsed',
+        importing: 'Importing {filename}...',
+        imported: 'Imported {count} records, total {total}',
+        added: 'Added {count} records, total {total}'
+      },
+      stats: {
+        overview: 'Overview',
+        monthly: 'Monthly',
+        quarterly: 'Quarterly',
+        yearly: 'Yearly',
+        totalParsed: 'Total Parsed',
+        successExtract: 'Successfully Extracted',
+        skipped: 'Skipped/Unrecognized',
+        totalPrice: 'Total Price',
+        reimbursed: 'Reimbursed',
+        pendingReimburse: 'Pending',
+        noData: 'No data',
+        times: 'trips'
+      },
+      chart: {
+        monthlyPrice: '📅 Monthly Price Statistics (CNY)',
+        topRoutes: '🚉 Top 8 Routes',
+        routeCost: '📊 Top 8 Route Costs',
+        quarterlyCost: '📈 Quarterly Cost Comparison',
+        trainTypes: '🚆 Train Type Distribution',
+        seatTypes: '💺 Seat Class Distribution',
+        price: 'Price (CNY)',
+        count: 'Trips',
+        cost: 'Cost (CNY)'
+      },
+      result: {
+        title: '📋 Parse Results',
+        total: 'Total {count} records',
+        filtered: 'Filtered {count} records',
+        sum: 'Sum ¥{amount}',
+        noData: 'No data'
+      },
+      filter: {
+        timeFilter: 'Time Filter:',
+        all: 'All',
+        thisMonth: 'This Month',
+        thisQuarter: 'This Quarter',
+        thisYear: 'This Year',
+        custom: 'Custom',
+        to: 'to',
+        startDate: 'Start Date',
+        endDate: 'End Date',
+        searchPlaceholder: 'Search: station, train no., name...',
+        allTrains: 'All Trains',
+        allSeats: 'All Seat Classes',
+        allStatus: 'All Status',
+        selectDateRange: 'Please select start and end dates'
+      },
+      train: {
+        highSpeed: 'High-Speed',
+        intercity: 'Intercity',
+        emu: 'EMU',
+        fast: 'Fast',
+        direct: 'Direct',
+        express: 'Express'
+      },
+      status: {
+        pending: 'Pending',
+        done: 'Reimbursed'
+      },
+      detail: {
+        title: 'Invoice Details',
+        departure: 'Departure',
+        arrival: 'Arrival',
+        trainNo: 'Train No.',
+        travelDate: 'Travel Date',
+        departTime: 'Departure Time',
+        price: 'Price',
+        carNo: 'Car No.',
+        seatNo: 'Seat No.',
+        seatClass: 'Seat Class',
+        passenger: 'Passenger',
+        reimbStatus: 'Reimbursement',
+        idNo: 'ID No. (Masked)',
+        invoiceDate: 'Invoice Date',
+        invoiceNo: 'Invoice No.',
+        eTicketNo: 'E-Ticket No.',
+        remark: 'Remark'
+      },
+      field: {
+        filename: 'Filename',
+        invoiceNo: 'Invoice No.',
+        invoiceDate: 'Invoice Date',
+        departure: 'Departure',
+        arrival: 'Arrival',
+        trainNo: 'Train No.',
+        travelDate: 'Travel Date',
+        departTime: 'Departure Time',
+        carNo: 'Car No.',
+        seatNo: 'Seat No.',
+        seatClass: 'Seat Class',
+        price: 'Price (CNY)',
+        passenger: 'Passenger',
+        idNo: 'ID No. (Masked)',
+        eTicketNo: 'E-Ticket No.',
+        remark: 'Remark',
+        reimbStatus: 'Reimbursement',
+        action: 'Action'
+      },
+      error: {
+        parseFailed: 'Parse failed: {error}',
+        importFailed: 'Import failed: {error}',
+        exportFailed: 'Export failed: {error}',
+        onlyPdf: 'PDF files only',
+        onlyTable: 'CSV, XLSX or XLSM files only',
+        noFile: 'No file received'
+      },
+      note: {
+        student: 'Student Ticket',
+        rescheduled: 'Rescheduled'
+      }
+    }
+  },
+  
+  t(key, params = {}) {
+    const keys = key.split('.');
+    let value = this.translations[this.lang];
+    for (const k of keys) {
+      value = value?.[k];
+    }
+    if (value === undefined) return key;
+    return Object.entries(params).reduce((str, [k, v]) => str.replace(`{${k}}`, v), value);
+  },
+  
+  setLang(lang) {
+    this.lang = lang;
+    localStorage.setItem('lang', lang);
+    this.updatePage();
+  },
+  
+  updatePage() {
+    document.documentElement.lang = this.lang === 'zh' ? 'zh-CN' : 'en';
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      el.textContent = this.t(key);
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      const key = el.getAttribute('data-i18n-placeholder');
+      el.placeholder = this.t(key);
+    });
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+      const key = el.getAttribute('data-i18n-title');
+      el.title = this.t(key);
+    });
+    if (allRec.length > 0) {
+      renderTable();
+      renderCharts(allRec);
+    }
+  }
+};
+
+// ═══════════════════════════════════════════════
 // 状态
 // ═══════════════════════════════════════════════
 let selFiles=[], allRec=[], filtRec=[], fields=[];
 let sortCol="乘车日期", sortDir="asc", charts={};
 let timeRange="all", dateStart="", dateEnd="";
 
-const COLS=["文件名","出发站","到达站","车次","乘车日期","开车时间",
-            "车厢号","座位号","席别","票价(元)","乘车人","报销状态","备注","操作"];
+function getColKeys() {
+  return ["filename","departure","arrival","trainNo","travelDate","departTime",
+          "carNo","seatNo","seatClass","price","passenger","reimbStatus","remark","action"];
+}
+
+function getColNames() {
+  return getColKeys().map(k => i18n.t('field.' + k));
+}
 
 // ═══════════════════════════════════════════════
 // DOM
@@ -367,6 +711,22 @@ const thead=$("t-head"), tbody=$("t-body");
 const rowCount=$("row-count"), fCount=$("f-count"), fSum=$("f-sum");
 const overlay=$("overlay"), moTitle=$("mo-title"), moBody=$("mo-body");
 const timeFilter=$("time-filter"), dateStartInput=$("date-start"), dateEndInput=$("date-end");
+
+// ═══════════════════════════════════════════════
+// 语言切换
+// ═══════════════════════════════════════════════
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    i18n.setLang(btn.dataset.lang);
+  });
+});
+
+// 初始化语言
+const savedLang = localStorage.getItem('lang') || 'zh';
+document.querySelector(`.lang-btn[data-lang="${savedLang}"]`)?.classList.add('active');
+document.querySelector(`.lang-btn[data-lang="${savedLang === 'zh' ? 'en' : 'zh'}"]`)?.classList.remove('active');
 
 // ═══════════════════════════════════════════════
 // 文件选择
@@ -396,7 +756,7 @@ function renderFList(){
     flist.appendChild(d);
   });
   btnParse.disabled=selFiles.length===0;
-  statusMsg.textContent=selFiles.length?`已选 ${selFiles.length} 个文件`:"";
+  statusMsg.textContent=selFiles.length?i18n.t('upload.selected', {count: selFiles.length}):"";
 }
 
 // ═══════════════════════════════════════════════
@@ -412,7 +772,7 @@ btnParse.addEventListener("click",async()=>{
   for(let i=0;i<selFiles.length;i++){
     const f=selFiles[i];
     pbFill.style.width=Math.round(i/selFiles.length*100)+"%";
-    pbText.textContent=`解析中 (${i+1}/${selFiles.length}): ${f.name}`;
+    pbText.textContent=i18n.t('progress.parsingFile', {current: i+1, total: selFiles.length, filename: f.name});
     const st=$("fs"+i);
     if(st){st.textContent="…";st.style.color="var(--muted)";}
     try{
@@ -425,16 +785,16 @@ btnParse.addEventListener("click",async()=>{
         st.style.color=d.record["车次"]?"var(--green)":"var(--orange)";}
     }catch(e){
       const rec={}; (fields.length?fields:["文件名","备注"]).forEach(k=>rec[k]="");
-      rec["文件名"]=f.name; rec["备注"]="解析失败:"+e.message;
+      rec["文件名"]=f.name; rec["备注"]=i18n.t('error.parseFailed', {error: e.message});
       allRec.push(rec);
       if(st){st.textContent="✗";st.style.color="var(--red)";}
     }
   }
-  pbFill.style.width="100%"; pbText.textContent="全部解析完成";
+  pbFill.style.width="100%"; pbText.textContent=i18n.t('progress.completed');
   setTimeout(()=>pbWrap.style.display="none",900);
 
   refreshDataView();
-  statusMsg.textContent=`新增 ${allRec.length-beforeCount} 条，共 ${allRec.length} 条`;
+  statusMsg.textContent=i18n.t('progress.added', {count: allRec.length-beforeCount, total: allRec.length});
 });
 
 // ═══════════════════════════════════════════════
@@ -445,7 +805,7 @@ importInput.addEventListener("change",async()=>{
   const f=importInput.files[0];
   if(!f) return;
   btnImport.disabled=true;
-  statusMsg.textContent=`正在导入 ${f.name}...`;
+  statusMsg.textContent=i18n.t('progress.importing', {filename: f.name});
   try{
     const fd=new FormData(); fd.append("file",f);
     const r=await fetch("/api/import_table",{method:"POST",body:fd});
@@ -454,10 +814,10 @@ importInput.addEventListener("change",async()=>{
     fields=d.fields||fields;
     allRec.push(...(d.records||[]));
     refreshDataView();
-    statusMsg.textContent=`已导入 ${d.records.length} 条，共 ${allRec.length} 条`;
+    statusMsg.textContent=i18n.t('progress.imported', {count: d.records.length, total: allRec.length});
   }catch(e){
-    alert("导入失败："+e.message);
-    statusMsg.textContent="导入失败";
+    alert(i18n.t('error.importFailed', {error: e.message}));
+    statusMsg.textContent=i18n.t('error.importFailed', {error: e.message});
   }finally{
     btnImport.disabled=false;
     importInput.value="";
@@ -530,13 +890,13 @@ function renderMonthStats(recs){
   });
   const keys=Object.keys(mMap).sort();
   if(!keys.length){
-    $("stats-month").innerHTML='<div style="color:var(--muted);text-align:center;padding:20px">暂无数据</div>';
+    $("stats-month").innerHTML=`<div style="color:var(--muted);text-align:center;padding:20px">${i18n.t('stats.noData')}</div>`;
     return;
   }
   let html='<div class="stats-grid">';
   keys.forEach(k=>{
     html+=`<div class="stats-item"><div class="val">${k}</div>`+
-          `<div class="lbl">${mMap[k].count}次 · ¥${mMap[k].price.toFixed(2)}</div></div>`;
+          `<div class="lbl">${mMap[k].count}${i18n.t('stats.times')} · ¥${mMap[k].price.toFixed(2)}</div></div>`;
   });
   html+='</div>';
   $("stats-month").innerHTML=html;
@@ -556,13 +916,13 @@ function renderQuarterStats(recs){
   });
   const keys=Object.keys(qMap).sort();
   if(!keys.length){
-    $("stats-quarter").innerHTML='<div style="color:var(--muted);text-align:center;padding:20px">暂无数据</div>';
+    $("stats-quarter").innerHTML=`<div style="color:var(--muted);text-align:center;padding:20px">${i18n.t('stats.noData')}</div>`;
     return;
   }
   let html='<div class="stats-grid">';
   keys.forEach(k=>{
     html+=`<div class="stats-item"><div class="val">${k}</div>`+
-          `<div class="lbl">${qMap[k].count}次 · ¥${qMap[k].price.toFixed(2)}</div></div>`;
+          `<div class="lbl">${qMap[k].count}${i18n.t('stats.times')} · ¥${qMap[k].price.toFixed(2)}</div></div>`;
   });
   html+='</div>';
   $("stats-quarter").innerHTML=html;
@@ -580,13 +940,13 @@ function renderYearStats(recs){
   });
   const keys=Object.keys(yMap).sort();
   if(!keys.length){
-    $("stats-year").innerHTML='<div style="color:var(--muted);text-align:center;padding:20px">暂无数据</div>';
+    $("stats-year").innerHTML=`<div style="color:var(--muted);text-align:center;padding:20px">${i18n.t('stats.noData')}</div>`;
     return;
   }
   let html='<div class="stats-grid">';
   keys.forEach(k=>{
     html+=`<div class="stats-item"><div class="val">${k}</div>`+
-          `<div class="lbl">${yMap[k].count}次 · ¥${yMap[k].price.toFixed(2)}</div></div>`;
+          `<div class="lbl">${yMap[k].count}${i18n.t('stats.times')} · ¥${yMap[k].price.toFixed(2)}</div></div>`;
   });
   html+='</div>';
   $("stats-year").innerHTML=html;
@@ -610,7 +970,7 @@ document.querySelectorAll(".stats-tab").forEach(tab=>{
 // ═══════════════════════════════════════════════
 function buildSeatOpts(recs){
   const seats=[...new Set(recs.map(r=>r["席别"]).filter(Boolean))].sort();
-  fSeat.innerHTML='<option value="">全部席别</option>';
+  fSeat.innerHTML=`<option value="">${i18n.t('filter.allSeats')}</option>`;
   seats.forEach(s=>fSeat.insertAdjacentHTML("beforeend",
     `<option value="${esc(s)}">${esc(s)}</option>`));
 }
@@ -654,7 +1014,7 @@ document.querySelectorAll(".time-btn[data-range]").forEach(btn=>{
 
 $("btn-custom-range").addEventListener("click",()=>{
   if(!dateStartInput.value || !dateEndInput.value){
-    alert("请选择开始和结束日期");
+    alert(i18n.t('filter.selectDateRange'));
     return;
   }
   document.querySelectorAll(".time-btn[data-range]").forEach(b=>b.classList.remove("active"));
@@ -710,31 +1070,39 @@ function sortRec(){
 // 表格
 // ═══════════════════════════════════════════════
 function renderTable(){
-  thead.innerHTML="<tr>"+COLS.map(c=>{
-    if(c==="操作") return `<th style="cursor:default;width:60px"></th>`;
-    if(c==="报销状态") return `<th style="cursor:default;width:80px">${esc(c)}</th>`;
-    const cls=c===sortCol?sortDir:"";
-    return `<th class="${cls}" onclick="setSort('${c}')">${esc(c)}<span class="sa"></span></th>`;
+  const colNames = getColNames();
+  const colKeys = getColKeys();
+  
+  thead.innerHTML="<tr>"+colNames.map((c, i)=>{
+    const key = colKeys[i];
+    if(key==="action") return `<th style="cursor:default;width:60px"></th>`;
+    if(key==="reimbStatus") return `<th style="cursor:default;width:80px">${esc(c)}</th>`;
+    const cls=sortCol===["文件名","出发站","到达站","车次","乘车日期","开车时间",
+            "车厢号","座位号","席别","票价(元)","乘车人","报销状态","备注"][i]?sortDir:"";
+    return `<th class="${cls}" onclick="setSort('${["文件名","出发站","到达站","车次","乘车日期","开车时间",
+            "车厢号","座位号","席别","票价(元)","乘车人","报销状态","备注"][i]}')">${esc(c)}<span class="sa"></span></th>`;
   }).join("")+"</tr>";
 
   if(!filtRec.length){
-    tbody.innerHTML=`<tr><td colspan="${COLS.length}" class="no-data">暂无数据</td></tr>`;
+    tbody.innerHTML=`<tr><td colspan="${colNames.length}" class="no-data">${i18n.t('result.noData')}</td></tr>`;
   } else {
-    tbody.innerHTML=filtRec.map((row,i)=>"<tr>"+COLS.map(col=>{
-      const v=row[col]||"";
-      if(col==="操作")    return `<td><button class="act-btn" onclick="showDetail(${i})">详情</button></td>`;
-      if(col==="报销状态") return `<td>${reimbBtn(allRec.indexOf(row),v||"未报销")}</td>`;
-      if(col==="车次")    return `<td>${trainBadge(v)}</td>`;
-      if(col==="备注")    return `<td>${noteTags(v)||dash()}</td>`;
-      if(col==="文件名")  return `<td class="td-file" title="${esc(v)}">${esc(v)}</td>`;
-      if(col==="票价(元)"&&v) return `<td class="td-price">¥${esc(v)}</td>`;
+    tbody.innerHTML=filtRec.map((row,i)=>"<tr>"+colKeys.map((key, colIdx)=>{
+      const origKey = ["文件名","出发站","到达站","车次","乘车日期","开车时间",
+            "车厢号","座位号","席别","票价(元)","乘车人","报销状态","备注","操作"][colIdx];
+      const v=row[origKey]||"";
+      if(key==="action")    return `<td><button class="act-btn" onclick="showDetail(${i})">${i18n.t('btn.detail')}</button></td>`;
+      if(key==="reimbStatus") return `<td>${reimbBtn(allRec.indexOf(row),v||"未报销")}</td>`;
+      if(key==="trainNo")    return `<td>${trainBadge(v)}</td>`;
+      if(key==="remark")    return `<td>${noteTags(v)||dash()}</td>`;
+      if(key==="filename")  return `<td class="td-file" title="${esc(v)}">${esc(v)}</td>`;
+      if(key==="price"&&v) return `<td class="td-price">¥${esc(v)}</td>`;
       return `<td>${esc(v)||dash()}</td>`;
     }).join("")+"</tr>").join("");
   }
   const tot=filtRec.reduce((s,r)=>s+(parseFloat(r["票价(元)"])||0),0);
-  rowCount.textContent=`共 ${allRec.length} 条`;
-  fCount.textContent=`筛选后 ${filtRec.length} 条`;
-  fSum.textContent=filtRec.length?`合计 ¥${tot.toFixed(2)}`:"";
+  rowCount.textContent=i18n.t('result.total', {count: allRec.length});
+  fCount.textContent=i18n.t('result.filtered', {count: filtRec.length});
+  fSum.textContent=filtRec.length?i18n.t('result.sum', {amount: tot.toFixed(2)}):"";
   resultCard.style.display="block";
   timeFilter.style.display="flex";
   searchBar.style.display="flex";
@@ -749,7 +1117,7 @@ function dash(){return `<span style="color:var(--muted)">-</span>`;}
 function reimbBtn(idx,status){
   const isDone=status==="已报销";
   const cls=isDone?"done":"pending";
-  const label=isDone?"已报销":"未报销";
+  const label=isDone?i18n.t('status.done'):i18n.t('status.pending');
   return `<button class="reimb-btn ${cls}" onclick="toggleReimb(${idx})">${label}</button>`;
 }
 
@@ -764,18 +1132,18 @@ function toggleReimb(idx){
 // ═══════════════════════════════════════════════
 function showDetail(i){
   const r=filtRec[i];
-  moTitle.textContent="📄 "+(r["文件名"]||"发票详情");
+  moTitle.textContent="📄 "+(r["文件名"]||i18n.t('detail.title'));
   const items=[
-    {l:"出发站",v:r["出发站"]},{l:"到达站",v:r["到达站"]},
-    {l:"车次",v:r["车次"]},{l:"乘车日期",v:r["乘车日期"]},
-    {l:"开车时间",v:r["开车时间"]},{l:"票价",v:r["票价(元)"]?"¥"+r["票价(元)"]:""},
-    {l:"车厢号",v:r["车厢号"]},{l:"座位号",v:r["座位号"]},
-    {l:"席别",v:r["席别"]},{l:"乘车人",v:r["乘车人"]},
-    {l:"报销状态",v:r["报销状态"]||"未报销"},
-    {l:"证件号（脱敏）",v:r["证件号(脱敏)"]},{l:"开票日期",v:r["开票日期"]},
-    {l:"发票号码",v:r["发票号码"],f:1},
-    {l:"电子客票号",v:r["电子客票号"],f:1},
-    {l:"备注",v:r["备注"],f:1},
+    {l:i18n.t('detail.departure'),v:r["出发站"]},{l:i18n.t('detail.arrival'),v:r["到达站"]},
+    {l:i18n.t('detail.trainNo'),v:r["车次"]},{l:i18n.t('detail.travelDate'),v:r["乘车日期"]},
+    {l:i18n.t('detail.departTime'),v:r["开车时间"]},{l:i18n.t('detail.price'),v:r["票价(元)"]?"¥"+r["票价(元)"]:""},
+    {l:i18n.t('detail.carNo'),v:r["车厢号"]},{l:i18n.t('detail.seatNo'),v:r["座位号"]},
+    {l:i18n.t('detail.seatClass'),v:r["席别"]},{l:i18n.t('detail.passenger'),v:r["乘车人"]},
+    {l:i18n.t('detail.reimbStatus'),v:r["报销状态"]||i18n.t('status.pending')},
+    {l:i18n.t('detail.idNo'),v:r["证件号(脱敏)"]},{l:i18n.t('detail.invoiceDate'),v:r["开票日期"]},
+    {l:i18n.t('detail.invoiceNo'),v:r["发票号码"],f:1},
+    {l:i18n.t('detail.eTicketNo'),v:r["电子客票号"],f:1},
+    {l:i18n.t('detail.remark'),v:r["备注"],f:1},
   ];
   moBody.innerHTML=`<div class="dg">`+items.map(it=>
     `<div class="di${it.f?" full":""}">
@@ -795,7 +1163,6 @@ function renderCharts(recs){
   chartSec.style.display="block";
   Object.values(charts).forEach(c=>c&&c.destroy&&c.destroy()); charts={};
 
-  // 按月票价
   const mMap={};
   recs.forEach(r=>{
     const m=(r["乘车日期"]||"").match(/(\d{4})年(\d{1,2})月/);
@@ -805,11 +1172,10 @@ function renderCharts(recs){
   });
   const mK=Object.keys(mMap).sort();
   charts.month=new Chart($("c-month"),{type:"bar",data:{
-    labels:mK,datasets:[{label:"票价(元)",data:mK.map(k=>+mMap[k].toFixed(2)),
+    labels:mK,datasets:[{label:i18n.t('chart.price'),data:mK.map(k=>+mMap[k].toFixed(2)),
       backgroundColor:"rgba(22,119,255,.75)",borderRadius:5,borderSkipped:false}]
   },options:opts1()});
 
-  // 热门路线（次数）
   const rMap={};
   recs.forEach(r=>{
     if(!r["出发站"]||!r["到达站"]) return;
@@ -817,11 +1183,10 @@ function renderCharts(recs){
   });
   const top8=Object.entries(rMap).sort((a,b)=>b[1]-a[1]).slice(0,8);
   charts.route=new Chart($("c-route"),{type:"bar",data:{
-    labels:top8.map(x=>x[0]),datasets:[{label:"次",data:top8.map(x=>x[1]),
+    labels:top8.map(x=>x[0]),datasets:[{label:i18n.t('chart.count'),data:top8.map(x=>x[1]),
       backgroundColor:"rgba(82,196,26,.75)",borderRadius:5,borderSkipped:false}]
   },options:{...opts1(),indexAxis:"y"}});
 
-  // 路线费用
   const rpMap={};
   recs.forEach(r=>{
     if(!r["出发站"]||!r["到达站"]) return;
@@ -830,11 +1195,10 @@ function renderCharts(recs){
   });
   const top8p=Object.entries(rpMap).sort((a,b)=>b[1]-a[1]).slice(0,8);
   charts.routePrice=new Chart($("c-route-price"),{type:"bar",data:{
-    labels:top8p.map(x=>x[0]),datasets:[{label:"费用(元)",data:top8p.map(x=>+x[1].toFixed(2)),
+    labels:top8p.map(x=>x[0]),datasets:[{label:i18n.t('chart.cost'),data:top8p.map(x=>+x[1].toFixed(2)),
       backgroundColor:"rgba(250,140,22,.75)",borderRadius:5,borderSkipped:false}]
   },options:{...opts1(),indexAxis:"y"}});
 
-  // 季度费用
   const qMap={};
   recs.forEach(r=>{
     const m=(r["乘车日期"]||"").match(/(\d{4})年(\d{1,2})月/);
@@ -846,11 +1210,10 @@ function renderCharts(recs){
   });
   const qK=Object.keys(qMap).sort();
   charts.quarter=new Chart($("c-quarter"),{type:"bar",data:{
-    labels:qK,datasets:[{label:"费用(元)",data:qK.map(k=>+qMap[k].toFixed(2)),
+    labels:qK,datasets:[{label:i18n.t('chart.cost'),data:qK.map(k=>+qMap[k].toFixed(2)),
       backgroundColor:"rgba(114,46,209,.75)",borderRadius:5,borderSkipped:false}]
   },options:opts1()});
 
-  // 车次类型
   const tMap={G:0,C:0,D:0,K:0,Z:0,T:0,"其他":0};
   recs.forEach(r=>{
     const t=(r["车次"]||"")[0]?.toUpperCase();
@@ -862,9 +1225,8 @@ function renderCharts(recs){
     labels:tK,datasets:[{data:tK.map(k=>tMap[k]),backgroundColor:PIE_C,borderWidth:2,borderColor:"#fff"}]
   },options:optsD()});
 
-  // 席别
   const sMap={};
-  recs.forEach(r=>{const s=r["席别"]||"未知"; sMap[s]=(sMap[s]||0)+1;});
+  recs.forEach(r=>{const s=r["席别"]||i18n.t('stats.noData'); sMap[s]=(sMap[s]||0)+1;});
   const sK=Object.keys(sMap);
   charts.seat=new Chart($("c-seat"),{type:"doughnut",data:{
     labels:sK,datasets:[{data:sK.map(k=>sMap[k]),backgroundColor:PIE_C,borderWidth:2,borderColor:"#fff"}]
@@ -889,12 +1251,12 @@ btnCsv.addEventListener("click",async()=>{
 btnXls.addEventListener("click",async()=>{
   if(!allRec.length) return;
   const orig=btnXls.innerHTML;
-  btnXls.disabled=true; btnXls.textContent="⏳ 生成中...";
+  btnXls.disabled=true; btnXls.textContent=i18n.t('btn.generating');
   try{
     const r=await fetch("/api/download_excel",{method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({records:allRec})});
-    if(!r.ok){const j=await r.json();alert("导出失败："+j.error);return;}
+    if(!r.ok){const j=await r.json();alert(i18n.t('error.exportFailed', {error: j.error}));return;}
     dlBlob(await r.blob(),"tickets.xlsx");
   }finally{btnXls.disabled=false;btnXls.innerHTML=orig;}
 });
@@ -930,6 +1292,13 @@ function fmtSz(b){
   if(b<1048576) return (b/1024).toFixed(1)+" KB";
   return (b/1048576).toFixed(1)+" MB";
 }
+
+// 页面加载完成后初始化语言
+document.addEventListener('DOMContentLoaded', () => {
+  const savedLang = localStorage.getItem('lang') || 'zh';
+  i18n.lang = savedLang;
+  i18n.updatePage();
+});
 </script>
 </body>
 </html>
